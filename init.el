@@ -32,7 +32,7 @@
 
 
 ;; initialize use-package on non-linux distros
-(unless package-archive-contents (package-install 'use-package) )
+(unless (package-installed-p 'use-package) (package-install 'use-package) )
 
 (require 'use-package)
 (setq use-package-always-ensure t)
