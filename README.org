@@ -1,0 +1,1 @@
+1. Clone the directory and rename it to `~/.emacs.d` (If it makes sense to backup you old config directory, then do that first.)
