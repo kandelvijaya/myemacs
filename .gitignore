@@ -1,0 +1,7 @@
+etc/
+var/
+elpa/
+packages/
+transient/
+auto-save-list/
+eln-cache/
