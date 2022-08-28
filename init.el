@@ -41,39 +41,26 @@
 ; (use-package command-log-mode)
 ;; didn't work
 
+
+;; line and column numbers show
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; disable line numebrs for specific modes
+(dolist (mode '(
+		; list of modes 
+		org-mode-hook
+		term-mode-hook
+		shell-mode-hook
+		eshell-mode-hook))
+	 (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+
 (use-package spacemacs-theme)
 
 ;; Dark theme. Non-dark variant is found with spacemacs-light
 ;; alternative good option is tango-dark. 
 (load-theme 'spacemacs-dark)
-
-;; Auto-Completion are provided by Helm or Ivy. It simplifies C-x C-f and file search,
-;; fuzzy selection of commands on M-x
-(use-package ivy
-  :diminish				;doesnot show this one ModeLine to keep it simple.
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-     (ivy-mode 1)
-  )
-
-
-
-;; ivy should have installed these sub-dependencies but it didn't
-(use-package counsel)
-(use-package swiper)
-
 
 
 ;; Customizing ModeLine
@@ -97,8 +84,7 @@
  '(custom-safe-themes
    '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
  '(package-selected-packages
-   '(magit doom-modeline counsel ivy spacemacs-theme use-package))
- '(warning-suppress-log-types '((comp) (comp)))
+   '(which-key magit doom-modeline counsel spacemacs-theme use-package '(warning-suppress-log-types '((use-package) (comp)))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -106,3 +92,35 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+
+;; Displays all associated key binding and their functions after set delay on the mini-mode
+(use-package which-key
+  :init(which-key-mode)
+  :diminish
+  :config
+  (setq which-key-idle-delay 2))
+
+;; fuzzy search on M-x for use with Selectrum
+;; for example: `M-x swi buf` to get to Switch Buffer
+(use-package selectrum-prescient)
+
+;; Simple and fast M-x completion mode
+(use-package selectrum
+  :functions 'selectrum-mode
+  :init
+  (selectrum-prescient-mode +1))
+
+;; Provides additonal consulting mode for M-x
+;; use `consult-` keys on M-x
+(use-package consult)
+
+;; Enable richer annotations using the Marginalia package
+;; For example; shows description on right hand side.
+(use-package marginalia
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode))
