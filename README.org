@@ -1,1 +1,5 @@
-1. Clone the directory and rename it to `~/.emacs.d` (If it makes sense to backup you old config directory, then do that first.)
+
+* How to install?
+- This setup requires Fira Code Font to be installed on your system. Please download and install the font before proceeding  [[https://github.com/tonsky/FiraCode][Fira Code Github]]
+- Clone the directory and rename it to `~/.emacs.d`
+- NOTE: If it makes sense to backup you old config directory, then do that first.
