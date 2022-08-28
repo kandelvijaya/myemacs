@@ -64,6 +64,13 @@
 
 
 ;; Customizing ModeLine
+(use-package all-the-icons
+  :if (display-graphic-p))
+
+;; if all-icons-font is not installed prompt the user to install
+;; manula installation via `M-x all-the-icons-install-fonts`
+;; TODO:
+
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
@@ -124,3 +131,13 @@
   ;; Must be in the :init section of use-package such that the mode gets
   ;; enabled right away. Note that this forces loading the package.
   (marginalia-mode))
+
+
+
+;; ORG-mode specifics
+(use-package org)
+(use-package org-superstar)
+
+
+;; Writing specifics
+(use-package writeroom-mode)
