@@ -5,3 +5,4 @@ packages/
 transient/
 auto-save-list/
 eln-cache/
+init.el~
