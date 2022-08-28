@@ -1,19 +1,20 @@
-(setq inhibit-startup-message t)  ;; hide startup msg
-(scroll-bar-mode -1)              ;; disable visual scrollbar mode
+(setq inhibit-startup-message t)  ;; hide default emacs startup msg
+(scroll-bar-mode -1)              ;; disable visual scrollbar
 (tool-bar-mode -1)                ;; disable toolbar
 (tooltip-mode -1)                 ;; tooltip is a overlay info, disable it 
-(set-fringe-mode 10)              ;; The fringe is a thin strip down the left and/or right edge of a window. 
+(set-fringe-mode 10)              ;; The fringe is a thin strip on the left and/or right edge of a window. 
 (menu-bar-mode -1)                ;; disable menu bar mode
 
 
+;; download Fira code fonts which looks good. 
 (set-face-attribute 'default nil :font "Fira Code" :height 150)
+
 
 ;; use M-x eval-buffer to run this.
 ;; use M-x describe-function to get help
 
-;; TODO: symbol vs string on Lisp
 
-;; Make ESC key work like CRTL + G
+;; Make ESC key work like CRTL + G, or hide log/warning prompts 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 
@@ -42,7 +43,7 @@
 
 (use-package spacemacs-theme)
 
-;; Dark theme. I would be okay with non-dark variant more so.
+;; Dark theme. Non-dark variant is found with spacemacs-light
 ;; alternative good option is tango-dark. 
 (load-theme 'spacemacs-dark)
 
@@ -85,6 +86,9 @@
 ;; magit
 (use-package magit)
 
+
+
+;;=================== disable warnings from emacs 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
