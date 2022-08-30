@@ -4,7 +4,7 @@
 (tooltip-mode -1)                 ;; tooltip is a overlay info, disable it 
 (set-fringe-mode 10)              ;; The fringe is a thin strip on the left and/or right edge of a window. 
 (menu-bar-mode -1)                ;; disable menu bar mode
-
+(toggle-frame-fullscreen)         ;; start with fullscreen 
 
 ;; download Fira code fonts which looks good. 
 (set-face-attribute 'default nil :font "Fira Code" :height 150)
@@ -56,11 +56,12 @@
 	 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
-(use-package spacemacs-theme)
-
 ;; Dark theme. Non-dark variant is found with spacemacs-light
-;; alternative good option is tango-dark. 
-(load-theme 'spacemacs-dark)
+;; alternative good option is tango-dark.
+;; unsing t at the end supresses interactive prompt.
+(use-package spacemacs-theme
+  :defer t
+  :init (load-theme 'spacemacs-dark t))
 
 
 ;; Customizing ModeLine
@@ -69,8 +70,6 @@
 
 ;; if all-icons-font is not installed prompt the user to install
 ;; manula installation via `M-x all-the-icons-install-fonts`
-;; TODO:
-
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
@@ -79,26 +78,6 @@
 
 ;; magit
 (use-package magit)
-
-
-
-;;=================== disable warnings from emacs 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
- '(package-selected-packages
-   '(which-key magit doom-modeline counsel spacemacs-theme use-package '(warning-suppress-log-types '((use-package) (comp)))
- '(warning-suppress-types '((comp))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 
 ;; Displays all associated key binding and their functions after set delay on the mini-mode
@@ -116,6 +95,7 @@
 (use-package selectrum
   :functions 'selectrum-mode
   :init
+  (selectrum-mode 1)
   (selectrum-prescient-mode +1))
 
 ;; Provides additonal consulting mode for M-x
@@ -141,3 +121,18 @@
 
 ;; Writing specifics
 (use-package writeroom-mode)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
+ '(package-selected-packages
+   '(writeroom-mode org-superstar marginalia consult selectrum-prescient which-key use-package spacemacs-theme magit doom-modeline counsel all-the-icons)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
