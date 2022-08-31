@@ -129,10 +129,39 @@
  '(custom-safe-themes
    '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
  '(package-selected-packages
-   '(writeroom-mode org-superstar marginalia consult selectrum-prescient which-key use-package spacemacs-theme magit doom-modeline counsel all-the-icons)))
+   '(emacsql-sqlite3 org-roam writeroom-mode org-superstar marginalia consult selectrum-prescient which-key use-package spacemacs-theme magit doom-modeline counsel all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; This is required for org-roam to not error on database connection. 
+(use-package emacsql-sqlite3)
+(setq org-roam-database-connector 'sqlite3)
+
+;; install org-roam
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/roamnotes/"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-setup)
+  )
+
+
+;; magit
+(use-package magit
+  :commands (magit-status magit-get-current-branch)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+
