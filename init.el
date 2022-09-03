@@ -67,7 +67,7 @@
 ;; unsing t at the end supresses interactive prompt.
 (use-package spacemacs-theme
   :defer t
-  :init (load-theme 'spacemacs-dark t))
+  :init (load-theme 'spacemacs-light t))
 
 ;; if all-icons-font is not installed prompt the user to install
 ;; manula installation via `M-x all-the-icons-install-fonts`
@@ -114,22 +114,24 @@
   (setq org-ellipsis " ▼")
   )
 
-(defun bj/set-left-padding ()
-     (set-window-margins (selected-window) 3 0)
-  )
-
-;; prettify bullets
-(use-package org-bullets
-  :after org
-  :hook
-  (org-mode . org-bullets-mode)
-  (org-mode . bj/set-left-padding)
-  )
-
 ;; use org-tempo to allow faster code block addition
 (require 'org-tempo)
 
-(use-package org-superstar)
+(use-package org-superstar
+  :after org
+  :hook (org-mode . org-superstar-mode)
+  :config
+  (setq org-ellipsis " ▼")
+  (setq org-superstar-headline-bullets-list
+	'("◉" "◑" "◐" "◷" "▷")))
+
+(defun my-set-margins ()
+  "Set margins in current buffer."
+  (setq left-margin-width 10)
+  (setq right-margin-width 0))
+
+;; Add margins by default to a mode
+(add-hook 'org-mode-hook 'my-set-margins)
 
 ;; This is required for org-roam to not error on database connection. 
 (use-package emacsql-sqlite3)

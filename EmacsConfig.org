@@ -93,8 +93,6 @@ Ensure these are downloaded. If not, the script wont continue.
 		  eshell-mode-hook))
 	   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-
-
 #+end_src
 
 *** Theme
@@ -104,8 +102,7 @@ Ensure these are downloaded. If not, the script wont continue.
   ;; unsing t at the end supresses interactive prompt.
   (use-package spacemacs-theme
     :defer t
-    :init (load-theme 'spacemacs-dark t))
-
+    :init (load-theme 'spacemacs-light t))
 
 #+end_src
 
@@ -164,29 +161,35 @@ This requires All the icons pacakge to be loaded for better UI.
 ** Org Mode
 *** Basic Setup for Bullets, Ellipsis
 #+begin_src emacs-lisp
+
   ;; ORG-mode specifics
   (use-package org
     :config
     (setq org-ellipsis " ▼")
     )
 
-  (defun bj/set-left-padding ()
-       (set-window-margins (selected-window) 3 0)
-    )
-
-  ;; prettify bullets
-  (use-package org-bullets
-    :after org
-    :hook
-    (org-mode . org-bullets-mode)
-    (org-mode . bj/set-left-padding)
-    )
-
   ;; use org-tempo to allow faster code block addition
   (require 'org-tempo)
 
-  (use-package org-superstar)
+  (use-package org-superstar
+    :after org
+    :hook (org-mode . org-superstar-mode)
+    :config
+    (setq org-ellipsis " ▼")
+    (setq org-superstar-headline-bullets-list
+	  '("◉" "◑" "◐" "◷" "▷")))
+#+end_src
+*** Customizing Left Margins
+This didn't work for many solution pretaining to windows.
+The solution that works is taken from [[https://stackoverflow.com/questions/39083118/emacs-how-to-set-margins-to-automatically-adjust-when-in-split-screen][SO answer]]
+#+begin_src emacs-lisp
+(defun my-set-margins ()
+  "Set margins in current buffer."
+  (setq left-margin-width 10)
+  (setq right-margin-width 0))
 
+;; Add margins by default to a mode
+(add-hook 'org-mode-hook 'my-set-margins)
 #+end_src
 *** Note Taking: Org-Roam
    - Fantastic way to backlinking and writing graphed ideas
