@@ -6,6 +6,11 @@
 (menu-bar-mode -1)                ;; disable menu bar mode
 (toggle-frame-fullscreen)         ;; start with fullscreen
 
+;; Y/N is better
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(setq initial-scratch-message "Welcome Back \n")
+
 ;; download Fira code fonts which looks good. 
 (set-face-attribute 'default nil :font "Fira Code" :height 150)
 
@@ -43,6 +48,7 @@
 (unless package-archive-contents (package-refresh-contents))
 
 
+
 ;; initialize use-package on non-linux distros
 (unless (package-installed-p 'use-package) (package-install 'use-package) )
 
@@ -76,30 +82,99 @@
   :hook (after-init . doom-modeline-mode)
   :custom (doom-modeline-height 15))
 
+;;; uses tab to show completions
+(setq tab-always-indent 'complete)
+(add-to-list 'completion-styles 'initials t)
+
+(setq recentf-mode t)
+
 ;; fuzzy search on M-x for use with Selectrum
 ;; for example: `M-x swi buf` to get to Switch Buffer
 (use-package selectrum-prescient)
 
 ;; Simple and fast M-x completion mode
-(use-package selectrum
+ (use-package selectrum
   :functions 'selectrum-mode
   :init
   (selectrum-mode 1)
-  (selectrum-prescient-mode +1))
+  (selectrum-prescient-mode +1)
+  (prescient-persist-mode +1))
 
-;; Provides additonal consulting mode for M-x
+;; (use-package vertico
+ ;;   :init
+ ;;   (vertico-mode)
+ ;;   )
+
+ ;; ;; Optionally use the orderless completion style.
+ ;; (use-package orderless
+ ;;   :init
+ ;;   ;; Configure a custom style dispatcher (see the Consult wiki)
+ ;;   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+ ;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+ ;;   (setq completion-styles '(initials orderless )
+ ;; 	completion-category-defaults nil
+ ;; 	completion-category-overrides '((file (styles partial-completion)))))
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; ;; Provides additonal consulting mode for M-x
 ;; use `consult-` keys on M-x
-(use-package consult)
+(use-package consult
+  :bind (
+	 ;; C-c bindings (mode-specific-map)
+	 ("C-c h" . consult-history)
+	 ("C-c m" . consult-mode-command)
+	 ("C-c k" . consult-kmacro)
+	 ;; C-x bindings (ctl-x-map)
+	 ("C-x b" . consult-buffer)
+	 ("M-s d" . consult-find)
+	 ("M-s l" . consult-line)
+	 ;; C-s is mapped to consult line 
+	 ("C-s" . consult-line)
+	 ))
 
 ;; Enable richer annotations using the Marginalia package
-;; For example; shows description on right hand side.
-(use-package marginalia
-  ;; The :init configuration is always executed (Not lazy!)
+ ;; For example; shows description on right hand side.
+ (use-package marginalia
+   ;; The :init configuration is always executed (Not lazy!)
+   :init
+
+   ;; Must be in the :init section of use-package such that the mode gets
+   ;; enabled right away. Note that this forces loading the package.
+   (marginalia-mode))
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
   :init
 
-  ;; Must be in the :init section of use-package such that the mode gets
-  ;; enabled right away. Note that this forces loading the package.
-  (marginalia-mode))
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :demand t ; only necessary if you have the hook below
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; Displays all associated key binding and their functions after set delay on the mini-mode
 (use-package which-key
@@ -174,10 +249,6 @@
 	    (lambda ()
 	      (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 
-;;; uses tab to show completions afte the thing is indented
-(setq tab-always-indent 'complete)
-(add-to-list 'completion-styles 'initials t)
-
 ;; (defvar bootstrap-version)
 ;; (let ((bootstrap-file
 ;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -197,3 +268,5 @@
 
 ;; required for org-roam-export to be available
 (require 'org-roam-export)
+
+(setq org-startup-folded 'show2levels)

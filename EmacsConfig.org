@@ -5,19 +5,25 @@
 This file is the source of truth to configure Emacs to my liking. It uses Literate prograamming and Reproducibility principles
 to generate $PROJ/.init.el file.
 
-
 * My Emacs 
 ** Basic Setup
 *** Intro
     We want to launch the emacs full screen to get to work. 
 #+begin_src emacs-lisp
-(setq inhibit-startup-message t)  ;; hide default emacs startup msg
-(scroll-bar-mode -1)              ;; disable visual scrollbar
-(tool-bar-mode -1)                ;; disable toolbar
-(tooltip-mode -1)                 ;; tooltip is a overlay info, disable it 
-(set-fringe-mode 10)              ;; The fringe is a thin strip on the left and/or right edge of a window. 
-(menu-bar-mode -1)                ;; disable menu bar mode
-(toggle-frame-fullscreen)         ;; start with fullscreen 
+  (setq inhibit-startup-message t)  ;; hide default emacs startup msg
+  (scroll-bar-mode -1)              ;; disable visual scrollbar
+  (tool-bar-mode -1)                ;; disable toolbar
+  (tooltip-mode -1)                 ;; tooltip is a overlay info, disable it 
+  (set-fringe-mode 10)              ;; The fringe is a thin strip on the left and/or right edge of a window. 
+  (menu-bar-mode -1)                ;; disable menu bar mode
+  (toggle-frame-fullscreen)         ;; start with fullscreen
+
+  ;; Y/N is better
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+End_src
+*** Initial Scrach buffer mode and message
+#+begin_src emacs-lisp
+  (setq initial-scratch-message "Welcome Back \n")
 #+end_src
 
 *** Font & Icons
@@ -55,7 +61,7 @@ Ensure these are downloaded. If not, the script wont continue.
 			   ("melpa" . "https://melpa.org/packages/")
 			   )
 
-	
+
 	package-archive-priorities '(
 				     ("melpa-stable". 10)
 				     ("org". 9)
@@ -69,6 +75,7 @@ Ensure these are downloaded. If not, the script wont continue.
 
   (unless package-archive-contents (package-refresh-contents))
 
+  
 
   ;; initialize use-package on non-linux distros
   (unless (package-installed-p 'use-package) (package-install 'use-package) )
@@ -118,35 +125,120 @@ This requires All the icons pacakge to be loaded for better UI.
 
 #+end_src
 
-** Basic Getting Around 
-*** Search Completion via Selectrum
+** Basic Getting Around
+*** Use Tab to get help on completion
+    - Neat trick https://stackoverflow.com/questions/7022898/emacs-autocompletion-in-emacs-lisp-mode 
 #+begin_src emacs-lisp
+  ;;; uses tab to show completions
+  (setq tab-always-indent 'complete)
+  (add-to-list 'completion-styles 'initials t)
+#+end_src
+*** Recent files
+#+begin_src emacs-lisp
+  (setq recentf-mode t)
+#+end_src
+*** Search Completion
+**** via Selectrum
+  #+begin_src emacs-lisp
   ;; fuzzy search on M-x for use with Selectrum
   ;; for example: `M-x swi buf` to get to Switch Buffer
   (use-package selectrum-prescient)
 
   ;; Simple and fast M-x completion mode
-  (use-package selectrum
+   (use-package selectrum
     :functions 'selectrum-mode
     :init
     (selectrum-mode 1)
-    (selectrum-prescient-mode +1))
+    (selectrum-prescient-mode +1)
+    (prescient-persist-mode +1))
+  #+end_src
+**** via Vertico
+- Seems like Vertico is successor of Selectrum [[https://github.com/minad/vertico][Vertico]]
+- Tab-Completion is a problem with Vertico.
+  #+begin_src emacs-lisp
+   ;; (use-package vertico
+    ;;   :init
+    ;;   (vertico-mode)
+    ;;   )
 
-  ;; Provides additonal consulting mode for M-x
-  ;; use `consult-` keys on M-x
-  (use-package consult)
-
-  ;; Enable richer annotations using the Marginalia package
-  ;; For example; shows description on right hand side.
-  (use-package marginalia
-    ;; The :init configuration is always executed (Not lazy!)
+    ;; ;; Optionally use the orderless completion style.
+    ;; (use-package orderless
+    ;;   :init
+    ;;   ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;;   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+    ;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+    ;;   (setq completion-styles '(initials orderless )
+    ;; 	completion-category-defaults nil
+    ;; 	completion-category-overrides '((file (styles partial-completion)))))
+  #+end_src
+**** Save History
+#+begin_src emacs-lisp
+  ;; Persist history over Emacs restarts. Vertico sorts by history position.
+  (use-package savehist
     :init
+    (savehist-mode))
+#+end_src
+**** Consult for supercharing 
+#+begin_src emacs-lisp
+  ;; ;; Provides additonal consulting mode for M-x
+  ;; use `consult-` keys on M-x
+  (use-package consult
+    :bind (
+	   ;; C-c bindings (mode-specific-map)
+	   ("C-c h" . consult-history)
+	   ("C-c m" . consult-mode-command)
+	   ("C-c k" . consult-kmacro)
+	   ;; C-x bindings (ctl-x-map)
+	   ("C-x b" . consult-buffer)
+	   ("M-s d" . consult-find)
+	   ("M-s l" . consult-line)
+	   ;; C-s is mapped to consult line 
+	   ("C-s" . consult-line)
+	   ))
+#+end_src
+**** Rich Annotation on M-x (Marginalia)
+#+begin_src emacs-lisp
+   ;; Enable richer annotations using the Marginalia package
+    ;; For example; shows description on right hand side.
+    (use-package marginalia
+      ;; The :init configuration is always executed (Not lazy!)
+      :init
 
-    ;; Must be in the :init section of use-package such that the mode gets
-    ;; enabled right away. Note that this forces loading the package.
-    (marginalia-mode))
+      ;; Must be in the :init section of use-package such that the mode gets
+      ;; enabled right away. Note that this forces loading the package.
+      (marginalia-mode))
+#+end_src
+*** Discovering actions based on context: Embark
+#+begin_src emacs-lisp
+(use-package embark
+  :ensure t
 
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :demand t ; only necessary if you have the hook below
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 *** Show Keys next to M-x Command
 #+begin_src emacs-lisp
@@ -248,20 +340,16 @@ Interacting with Git is awesome in Emacs.
 	      (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 #+end_src
 
+
 * New Things to Add
 ** Code Autocompletion 
-*** Company-mode
-*** Use Tab to get help on completion
-    - Neat trick https://stackoverflow.com/questions/7022898/emacs-autocompletion-in-emacs-lisp-mode 
-#+begin_src emacs-lisp
-  ;;; uses tab to show completions afte the thing is indented
-  (setq tab-always-indent 'complete)
-  (add-to-list 'completion-styles 'initials t)
-#+end_src
+** Company-mode
 ** Find Recent Files faster 
 ** Emacs-lisp linter 
 ** Straight Package Manager
-- using this confuses with normal one. 
+- using this confuses with normal package management.
+- Disabled for now.
+- When turned on to use Org-Roam-UI, it downloaded all new variants of org, org-roam and confused the existing config.
 #+begin_src emacs-lisp
   ;; (defvar bootstrap-version)
   ;; (let ((bootstrap-file
@@ -294,4 +382,10 @@ It's cool to visualize Graph.
 #+begin_src emacs-lisp
   ;; required for org-roam-export to be available
   (require 'org-roam-export)
+#+end_src
+
+** Org Mode Start
+- Start with 2 levels shown but all hidden. Easier to read. 
+#+begin_src emacs-lisp
+  (setq org-startup-folded 'show2levels)
 #+end_src
