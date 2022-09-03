@@ -27,7 +27,8 @@
 			 ("elpa" . "https://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")
 			 )
-      package-arch
+
+
       package-archive-priorities '(
 				   ("melpa-stable". 10)
 				   ("org". 9)
