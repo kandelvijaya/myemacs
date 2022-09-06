@@ -319,7 +319,7 @@ Interacting with Git is awesome in Emacs.
   ;; magit setup
   (use-package magit)
 #+end_src
-* Populate init.el on Save
+* Populate init.el on_Save
 ** Instruct Org-Babel for programming language
 #+begin_src emacs-lisp
    (org-babel-do-load-languages
@@ -329,15 +329,15 @@ Interacting with Git is awesome in Emacs.
 #+end_src
 ** on-Save hook on orgmode this file
 #+begin_src emacs-lisp
-(defun org-babel-tangle-emacsconfig-on-save ()
-    (when (string-equal (buffer-file-name)
-			(expand-file-name "~/.emacs.d/EmacsConfig.org"))
-      (let ((org-config-babel-evaluate nil))
-	(org-babel-tangle))))
+  (defun org-babel-tangle-emacsconfig-on-save ()
+      (when (string-equal (buffer-file-name)
+			  (expand-file-name "~/.emacs.d/EmacsConfig.org"))
+	(let ((org-config-babel-evaluate nil))
+	  (org-babel-tangle))))
 
-  (add-hook 'org-mode-hook
-	    (lambda ()
-	      (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
+    (add-hook 'org-mode-hook
+	      (lambda ()
+		(add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 #+end_src
 
 
@@ -388,4 +388,9 @@ It's cool to visualize Graph.
 - Start with 2 levels shown but all hidden. Easier to read. 
 #+begin_src emacs-lisp
   (setq org-startup-folded 'show2levels)
+#+end_src
+
+** Jump to Definition
+#+begin_src emacs-lisp
+  
 #+end_src
