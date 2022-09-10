@@ -23,7 +23,7 @@ to generate $PROJ/.init.el file.
 #+End_src
 *** Initial Scrach buffer mode and message
 #+begin_src emacs-lisp
-  (setq initial-scratch-message "Welcome Back \n")
+  (setq initial-scratch-message "; Welcome Back \n")
 #+end_src
 
 *** Font & Icons
@@ -322,10 +322,16 @@ Interacting with Git is awesome in Emacs.
 * Populate init.el on_Save
 ** Instruct Org-Babel for programming language
 #+begin_src emacs-lisp
-   (org-babel-do-load-languages
-    'org-babel-load-languages
-    '((emacs-lisp . t))
-    )
+      (require 'ob-shell)
+  
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((emacs-lisp . t)
+	 (restclient . t)
+	 (shell . t)
+	 (ruby . t)
+	 (python . t))
+       )
 #+end_src
 ** on-Save hook on orgmode this file
 #+begin_src emacs-lisp
@@ -341,11 +347,50 @@ Interacting with Git is awesome in Emacs.
 #+end_src
 
 
-* New Things to Add
+* Advanced Stuff
 ** Code Autocompletion 
+** LSP Mode
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-mode . lsp-deferred)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deffered))
+#+end_src
+*** Python lang support
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+    :ensure t
+    :hook (python-mode . (lambda ()
+			    (require 'lsp-pyright)
+			    (lsp-deferred))))  ; or lsp-deferred
+(use-package lsp-ui)
+#+end_src
+
 ** Company-mode
+#+begin_src emacs-lisp
+    
+    
+#+end_src
 ** Find Recent Files faster 
-** Emacs-lisp linter 
+** Emacs Programming Specifics 
+*** Lisp auto format on Save
+#+begin_src emacs-lisp
+
+#+end_src>
+*** Emacs-lisp Match brackets automatically
+**** TODO remove <> from autopairs
+#+begin_src emacs-lisp
+  (defun my/autoparens () (electric-pair-mode t))
+
+  (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
+  (add-hook 'lisp-interaction-mode-hook #'my/autoparens)
+
+#+end_src
 ** Straight Package Manager
 - using this confuses with normal package management.
 - Disabled for now.
@@ -385,12 +430,44 @@ It's cool to visualize Graph.
 #+end_src
 
 ** Org Mode Start
-- Start with 2 levels shown but all hidden. Easier to read. 
+*** Start with 2 levels shown but all hidden. Easier to read. 
 #+begin_src emacs-lisp
   (setq org-startup-folded 'show2levels)
 #+end_src
-
+*** Open code on right window
+#+begin_src emacs-lisp
+  (setq org-src-window-setup 'split-window-right)
+#+end_src
 ** Jump to Definition
+#+begin_src emacs-lisp
+  
+#+end_src
+
+** REST Client
+- A way to express and explore API
+  [[https://github.com/pashky/restclient.el][RestClient Github]]
+#+begin_src emacs-lisp
+  (use-package restclient)
+
+  ;; install org-babel hook
+  (use-package ob-restclient)
+#+end_src
+
+** Ruby
+#+begin_src emacs-lisp
+  ;; enables Org babel lang integration
+  (require 'ob-ruby)
+#+end_src
+
+** Python
+#+begin_src emacs-lisp
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+#+end_src
+
+*** Completion
 #+begin_src emacs-lisp
   
 #+end_src

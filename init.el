@@ -9,7 +9,7 @@
 ;; Y/N is better
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(setq initial-scratch-message "Welcome Back \n")
+(setq initial-scratch-message "; Welcome Back \n")
 
 ;; download Fira code fonts which looks good. 
 (set-face-attribute 'default nil :font "Fira Code" :height 150)
@@ -234,9 +234,15 @@
 ;; magit setup
 (use-package magit)
 
+(require 'ob-shell)
+
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((emacs-lisp . t))
+ '((emacs-lisp . t)
+   (restclient . t)
+   (shell . t)
+   (ruby . t)
+   (python . t))
  )
 
 (defun org-babel-tangle-emacsconfig-on-save ()
@@ -248,6 +254,30 @@
   (add-hook 'org-mode-hook
 	    (lambda ()
 	      (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
+
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-mode . lsp-deferred)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deffered))
+
+(use-package lsp-pyright
+    :ensure t
+    :hook (python-mode . (lambda ()
+			    (require 'lsp-pyright)
+			    (lsp-deferred))))  ; or lsp-deferred
+(use-package lsp-ui)
+
+
+
+(defun my/autoparens () (electric-pair-mode t))
+
+(add-hook 'emacs-lisp-mode-hook #'my/autoparens)
+(add-hook 'lisp-interaction-mode-hook #'my/autoparens)
 
 ;; (defvar bootstrap-version)
 ;; (let ((bootstrap-file
@@ -270,5 +300,22 @@
 (require 'org-roam-export)
 
 (setq org-startup-folded 'show2levels)
+
+(setq org-src-window-setup 'split-window-right)
+
+
+
+(use-package restclient)
+
+;; install org-babel hook
+(use-package ob-restclient)
+
+;; enables Org babel lang integration
+(require 'ob-ruby)
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
 
 
