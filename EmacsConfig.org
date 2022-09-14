@@ -76,7 +76,6 @@ Ensure these are downloaded. If not, the script wont continue.
   (unless package-archive-contents (package-refresh-contents))
 
   
-
   ;; initialize use-package on non-linux distros
   (unless (package-installed-p 'use-package) (package-install 'use-package) )
 
@@ -250,6 +249,41 @@ This requires All the icons pacakge to be loaded for better UI.
     (setq which-key-idle-delay 2))
 
 #+end_src
+*** Getting help for function, variable
+**** Open in Helpful in another buffer but keep cursor on current.
+- This allows to press ESC key to quit help, documentation or mini spawned buffer.
+  #+begin_src emacs-lisp
+    (defun bj-helpful-callable-in-another-window ()
+      "Helpful-callable create a new window and when pressing ESC it actually kills the initiating window.
+
+       This function switches the window once helpful-callabel is done so at to make ESC work as expected
+      "
+      (interactive)
+      (progn 
+	(call-interactively #'helpful-callable)
+	(call-interactively #'other-window)
+      )
+    )
+  #+end_src
+***** TODO Maybe swap the implementation of helpful-callable
+#+begin_src emacs-lisp
+
+#+end_src
+**** Using Helpful package 
+- By default emacs will show C-c h f/v/k will display help for variable function and keys.
+- However the default view is monotonous black and white. No difference between source, further pages.
+- [[https://github.com/Wilfred/helpful][Helpful]] package aims to solve this.
+  #+begin_src emacs-lisp
+    (use-package helpful)
+
+    ;; Note that the built-in `describe-function' includes both functions
+    ;; and macros. `helpful-function' is functions only, so we provide
+    ;; `helpful-callable' as a drop-in replacement.
+    (global-set-key (kbd "C-h f") #'bj-helpful-callable-in-another-window)
+
+    (global-set-key (kbd "C-h v") #'helpful-variable)
+    (global-set-key (kbd "C-h k") #'helpful-key)
+  #+end_src
 ** Org Mode
 *** Basic Setup for Bullets, Ellipsis
 #+begin_src emacs-lisp
@@ -346,20 +380,19 @@ Interacting with Git is awesome in Emacs.
 		(add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 #+end_src
 
-
 * Advanced Stuff
 ** Code Autocompletion 
 ** LSP Mode
 #+begin_src emacs-lisp
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-mode . lsp-deferred)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-deffered))
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+	   (python-mode . lsp-deferred)
+	   ;; if you want which-key integration
+	   (lsp-mode . lsp-enable-which-key-integration))
+    :commands (lsp lsp-deffered))
 #+end_src
 *** Python lang support
 #+begin_src emacs-lisp
@@ -368,9 +401,14 @@ Interacting with Git is awesome in Emacs.
     :hook (python-mode . (lambda ()
 			    (require 'lsp-pyright)
 			    (lsp-deferred))))  ; or lsp-deferred
-(use-package lsp-ui)
+  (use-package lsp-ui)
 #+end_src
+*** Run python language server ifneeded
+- Python lsp server needs to be running for LSP to work
+- Start the lsp server for the lifetime of emacs if this was not started
+  #+begin_src emacs-lisp
 
+  #+end_src
 ** Company-mode
 #+begin_src emacs-lisp
     

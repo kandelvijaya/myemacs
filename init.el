@@ -48,7 +48,6 @@
 (unless package-archive-contents (package-refresh-contents))
 
 
-
 ;; initialize use-package on non-linux distros
 (unless (package-installed-p 'use-package) (package-install 'use-package) )
 
@@ -183,6 +182,30 @@
   :config
   (setq which-key-idle-delay 2))
 
+(defun bj-helpful-callable-in-another-window ()
+  "Helpful-callable create a new window and when pressing ESC it actually kills the initiating window.
+
+   This function switches the window once helpful-callabel is done so at to make ESC work as expected
+  "
+  (interactive)
+  (progn 
+    (call-interactively #'helpful-callable)
+    (call-interactively #'other-window)
+  )
+)
+
+
+
+(use-package helpful)
+
+;; Note that the built-in `describe-function' includes both functions
+;; and macros. `helpful-function' is functions only, so we provide
+;; `helpful-callable' as a drop-in replacement.
+(global-set-key (kbd "C-h f") #'bj-helpful-callable-in-another-window)
+
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+
 ;; ORG-mode specifics
 (use-package org
   :config
@@ -260,17 +283,19 @@
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-mode . lsp-deferred)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
+	 (python-mode . lsp-deferred)
+	 ;; if you want which-key integration
+	 (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deffered))
 
 (use-package lsp-pyright
-    :ensure t
-    :hook (python-mode . (lambda ()
-			    (require 'lsp-pyright)
-			    (lsp-deferred))))  ; or lsp-deferred
+  :ensure t
+  :hook (python-mode . (lambda ()
+			  (require 'lsp-pyright)
+			  (lsp-deferred))))  ; or lsp-deferred
 (use-package lsp-ui)
+
+
 
 
 
