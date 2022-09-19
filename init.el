@@ -12,9 +12,7 @@
 (setq initial-scratch-message "; Welcome Back \n")
 
 ;; download Fira code fonts which looks good. 
-(set-face-attribute 'default nil :font "Fira Code" :height 150)
-
-
+(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
 
 ;; Customizing ModeLine with all-the-icons
 (use-package all-the-icons
@@ -67,19 +65,14 @@
 		eshell-mode-hook))
 	 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; Dark theme. Non-dark variant is found with spacemacs-light
-;; alternative good option is tango-dark.
-;; unsing t at the end supresses interactive prompt.
-(use-package spacemacs-theme
-  :defer t
-  :init (load-theme 'spacemacs-light t))
-
 ;; if all-icons-font is not installed prompt the user to install
 ;; manula installation via `M-x all-the-icons-install-fonts`
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
   :custom (doom-modeline-height 15))
+
+(setq debug-on-error t)
 
 ;;; uses tab to show completions
 (setq tab-always-indent 'complete)
@@ -206,6 +199,8 @@
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
 ;; ORG-mode specifics
 (use-package org
   :config
@@ -270,13 +265,13 @@
 
 (defun org-babel-tangle-emacsconfig-on-save ()
     (when (string-equal (buffer-file-name)
-			(expand-file-name "~/.emacs.d/EmacsConfig.org"))
+                        (expand-file-name "~/.emacs.d/EmacsConfig.org"))
       (let ((org-config-babel-evaluate nil))
-	(org-babel-tangle))))
+        (org-babel-tangle))))
 
   (add-hook 'org-mode-hook
-	    (lambda ()
-	      (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
+            (lambda ()
+              (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 
 (use-package lsp-mode
   :init
@@ -297,8 +292,6 @@
 
 
 
-
-
 (defun my/autoparens () (electric-pair-mode t))
 
 (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
@@ -316,7 +309,6 @@
 ;;       (goto-char (point-max))
 ;;       (eval-print-last-sexp)))
 ;;   (load bootstrap-file nil 'nomessage))
-
 ;; (setq package-enable-at-startup nil)
 
 (use-package org-roam-ui)
@@ -328,7 +320,10 @@
 
 (setq org-src-window-setup 'split-window-right)
 
+(defun bj-indent-org-mode ()
+  (org-indent-mode t))
 
+(add-hook 'org-mode-hook #'bj-indent-org-mode)
 
 (use-package restclient)
 
@@ -344,3 +339,21 @@
   (elpy-enable))
 
 
+
+(defun bj-search-web-at-point ()
+  (interactive)
+  (eshell-command (concat "open -a firefox " "https://www.google.com/search?q=" (word-at-point)))
+  )
+
+(use-package swift-mode)
+
+;; install nano-theme
+;; (use-package nano-theme
+;;    :init (load-theme 'nano-light t))
+
+;; Dark theme. Non-dark variant is found with spacemacs-light
+;; alternative good option is tango-dark.
+;; unsing t at the end supresses interactive prompt.
+ (use-package spacemacs-theme
+    :defer t
+    :init (load-theme 'spacemacs-light t))
