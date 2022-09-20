@@ -314,7 +314,7 @@
 
 
 
-(defun my/autoparens () (electric-pair-mode t))
+(defun my/autoparens () (paredit-mode t))
 
 (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
 (add-hook 'lisp-interaction-mode-hook #'my/autoparens)
