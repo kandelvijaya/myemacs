@@ -315,9 +315,14 @@
 
 
 (defun my/autoparens () (paredit-mode t))
-
 (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
 (add-hook 'lisp-interaction-mode-hook #'my/autoparens)
+
+(use-package aggressive-indent)
+(defun bj/aggressive-indent-enabled () (aggressive-indent-mode t))
+(add-hook 'emacs-lisp-mode #'bj/aggressive-indent-enabled)
+(add-hook 'lisp-interaction-mode-hook #'bj/aggressive-indent-enabled)
+(add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
 
 ;; (defvar bootstrap-version)
 ;; (let ((bootstrap-file

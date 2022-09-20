@@ -402,7 +402,7 @@ Interacting with Git is awesome in Emacs.
                 (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 #+end_src
  
-* Advanced Stuff
+* Programming IDE Like support
 ** Code Autocompletion 
 ** LSP Mode
 #+begin_src emacs-lisp
@@ -435,16 +435,52 @@ Interacting with Git is awesome in Emacs.
 #+end_src
 ** Company-mode
 ** Find Recent Files faster 
-** Emacs Programming Specifics 
-*** Lisp auto format on Save
+** Emacs Lisp Programming  
+*** TODO Lisp auto format on Save
 *** Emacs-lisp Match brackets automatically
 **** TODO remove <> from autopairs
 #+begin_src emacs-lisp
-  (defun my/autoparens () (paredit-mode t))
-
-  (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
-  (add-hook 'lisp-interaction-mode-hook #'my/autoparens)
+(defun my/autoparens () (paredit-mode t))
+(add-hook 'emacs-lisp-mode-hook #'my/autoparens)
+(add-hook 'lisp-interaction-mode-hook #'my/autoparens)
 #+end_src
+*** Aggressive Indenting
+#+begin_src emacs-lisp
+  (use-package aggressive-indent)
+  (defun bj/aggressive-indent-enabled () (aggressive-indent-mode t))
+  (add-hook 'emacs-lisp-mode #'bj/aggressive-indent-enabled)
+  (add-hook 'lisp-interaction-mode-hook #'bj/aggressive-indent-enabled)
+  (add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
+  #+end_src
+*** Documentation and finding help
+- describe-variable and describe-function are pretty useful
+- Embark at point is convenient to either find references or
+  definition
+**** Documentation at point.
+- eldoc mode is enabled for elisp code buffer. Try checking with `M-: eldoc-mode`
+- It shows docs on mini-buffer. 1 line.
+- TODO can we have it 2 lines
+**** Info at point
+- find emacs info of symbol at point with `M-x: info-lookup-symbol`
+-
+*** Debugging
+**** Add `(debug-on-entry t)` and debugger stops on error
+**** Use print but discouraged 
+**** Use Edebug (Interactive)
+***** Go to function defun and call `M-x: edebug-defun` which instruments the defun. 
+***** Go to caller and execute, now it steps through the code. 
+*** Linting
+**** `M-x: elint-current-buffer`
+*** Profiling
+**** Performance
+- `M-x: elp-instrument-function` and then execute the function.
+- Then check `M-x: elp-results`.
+- `M-x: elp-instrument-package` to find slow package and functions
+**** Memory usage
+- mutations are great if the only purpose of intemediate list is to be
+  thrown away. They usually start with `nreverse`.
+*** Testing
+
 ** [Disabled] Straight Package Manager
 - using this confuses with normal package management.
 - Disabled for now.
