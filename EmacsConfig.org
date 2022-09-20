@@ -33,7 +33,7 @@ Ensure these are downloaded. If not, the script wont continue.
     if the fonts if not already done on the system as elisp code.
 #+begin_src emacs-lisp
   ;; download Fira code fonts which looks good. 
-  (set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
+  (set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 140)
 
   ;; Customizing ModeLine with all-the-icons
   (use-package all-the-icons
@@ -122,9 +122,11 @@ This requires All the icons pacakge to be loaded for better UI.
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
 #+end_src
-*** Recent files
+*** [Disabled] Recent files
+- this caused error on recentf-expand-file-name non-void function. 
 #+begin_src emacs-lisp
-  (setq recentf-mode t)
+;;  (setq recentf-mode t)
+;;  (setq recentf-save-file (recentf-expand-file-name "~/.emacs.d/.recentf"))
 #+end_src
 *** Search Completion
 **** via Selectrum
@@ -324,7 +326,7 @@ The solution that works is taken from [[https://stackoverflow.com/questions/3908
   (use-package org-roam
     :ensure t
     :custom
-    (org-roam-directory (file-truename "~/roamnotes/"))
+    (org-roam-directory (file-truename "~/Library/Mobile Documents/com~apple~CloudDocs/All Notes/roamnotes/"))
     :bind (("C-c n l" . org-roam-buffer-toggle)
 	   ("C-c n f" . org-roam-node-find)
 	   ("C-c n g" . org-roam-graph)
@@ -349,19 +351,43 @@ Interacting with Git is awesome in Emacs.
   ;; magit setup
   (use-package magit)
 #+end_src
+** Project Management
+#+begin_src emacs-lisp
+  (use-package projectile
+   :diminish projectile-mode
+  :ensure t
+  :pin melpa-stable
+  :init
+  (progn
+   (projectile-mode +1)
+   (when (file-directory-p "~/Projects/")
+    (setq projectile-project-search-path '("~/Projects/")))
+   (when (file-directory-p "~/Work/")
+     (push "~/Work/" projectile-project-search-path)
+     )
+  )
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map)))
+#+end_src
+*** Consult integration
+#+begin_src emacs-lisp
+(use-package consult-projectile)
+#+end_src
+
 * Populate init.el on_Save
 ** Instruct Org-Babel for programming language
 #+begin_src emacs-lisp
-      (require 'ob-shell)
-  
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t)
-	 (restclient . t)
-	 (shell . t)
-	 (ruby . t)
-	 (python . t))
-       )
+  (require 'ob-shell)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (restclient . t)
+     (shell . t)
+     (ruby . t)
+     ;; (swift . t) there is no ob-swift TODO
+     (python . t))
+   )
 #+end_src
 ** on-Save hook on orgmode this file
 #+begin_src emacs-lisp
@@ -385,9 +411,11 @@ Interacting with Git is awesome in Emacs.
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
     (setq lsp-keymap-prefix "C-c l")
     :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	   (python-mode . lsp-deferred)
-	   ;; if you want which-key integration
-	   (lsp-mode . lsp-enable-which-key-integration))
+           (python-mode . lsp-deferred)
+           ;; if you want which-key integration
+           (lsp-mode . lsp-enable-which-key-integration)
+           ;;(swift-mode . lsp-deferred)
+           )
     :commands (lsp lsp-deffered))
 #+end_src
 *** Python lang support
@@ -446,6 +474,13 @@ It's cool to visualize Graph.
 - TODO Why can it not be found on Melpa?
 #+begin_src emacs-lisp
 (use-package org-roam-ui)
+#+end_src
+
+** Org Agenda Setup
+*** List of files to look
+- TODO check if its possible to add entire directory to search for. 
+#+begin_src emacs-lisp
+  (setq org-agenda-files (directory-files-recursively "~/Library/Mobile Documents/com~apple~CloudDocs/All Notes/roamnotes/" "\\.org$"))
 #+end_src
 
 ** Org Roam Export as HTML
@@ -509,8 +544,24 @@ It's cool to visualize Graph.
 #+end_src
 
 ** Swift 
+*** Install mode
 #+begin_src emacs-lisp
-(use-package swift-mode)
+  (use-package swift-mode
+    :hook (swift-mode . (lambda () (lsp))))
+#+end_src
+*** Install Swift LSP Support
+#+begin_src emacs-lisp 
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+#+end_src
+
+** FlyCheck
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 #+end_src
 
 * Themes
@@ -523,14 +574,72 @@ It's cool to visualize Graph.
   ;;    :init (load-theme 'nano-light t))  
 #+end_src
 ** Spacemacs Theme
+*** Install theme
 #+begin_src emacs-lisp
-  ;; Dark theme. Non-dark variant is found with spacemacs-light
-  ;; alternative good option is tango-dark.
-  ;; unsing t at the end supresses interactive prompt.
-   (use-package spacemacs-theme
-      :defer t
-      :init (load-theme 'spacemacs-light t))
-#+end_src
+   ;; Dark theme. Non-dark variant is found with spacemacs-light
+   ;; alternative good option is tango-dark.
+   ;; unsing t at the end supresses interactive prompt.
 
- 
- 
+  (use-package spacemacs-theme
+        :defer t
+        :init (progn
+               (custom-set-variables '(spacemacs-theme-custom-colors
+                                       '((bg1 .  "#f8f8f8"))
+                              ))
+               (load-theme 'spacemacs-light t)
+               )
+        )
+#+end_src
+*** Use White background as opposed to brownish tint
+#+begin_src emacs-lisp
+  ;; (custom-set-variables '(spacemacs-theme-custom-colors
+  ;;                           '(
+  ;;                             (bg1 . "#ffffff")
+  ;;                             )
+  ;;                           )
+  ;;                       )
+#+end_src
+*** Flycheck fringe
+- described at [[https://github.com/nashamri/spacemacs-theme][Theme docs]] and [[https://www.flycheck.org/en/latest/user/installation.html#syntax-checking-tools][FlyCheck]]
+- How is it different from LSP Mode?
+#+begin_src emacs-lisp
+(use-package flycheck
+  :init
+  (progn
+    (define-fringe-bitmap 'my-flycheck-fringe-indicator
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00011100
+              #b00111110
+              #b00111110
+              #b00111110
+              #b00011100
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
+
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-error)
+
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-warning)
+
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-info)))
+#+end_src

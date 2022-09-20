@@ -12,7 +12,7 @@
 (setq initial-scratch-message "; Welcome Back \n")
 
 ;; download Fira code fonts which looks good. 
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 150)
+(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 140)
 
 ;; Customizing ModeLine with all-the-icons
 (use-package all-the-icons
@@ -78,7 +78,8 @@
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
 
-(setq recentf-mode t)
+;;  (setq recentf-mode t)
+;;  (setq recentf-save-file (recentf-expand-file-name "~/.emacs.d/.recentf"))
 
 ;; fuzzy search on M-x for use with Selectrum
 ;; for example: `M-x swi buf` to get to Switch Buffer
@@ -234,7 +235,7 @@
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "~/roamnotes/"))
+  (org-roam-directory (file-truename "~/Library/Mobile Documents/com~apple~CloudDocs/All Notes/roamnotes/"))
   :bind (("C-c n l" . org-roam-buffer-toggle)
 	 ("C-c n f" . org-roam-node-find)
 	 ("C-c n g" . org-roam-graph)
@@ -252,6 +253,24 @@
 ;; magit setup
 (use-package magit)
 
+(use-package projectile
+ :diminish projectile-mode
+:ensure t
+:pin melpa-stable
+:init
+(progn
+ (projectile-mode +1)
+ (when (file-directory-p "~/Projects/")
+  (setq projectile-project-search-path '("~/Projects/")))
+ (when (file-directory-p "~/Work/")
+   (push "~/Work/" projectile-project-search-path)
+   )
+)
+:bind (:map projectile-mode-map
+            ("C-c p" . projectile-command-map)))
+
+(use-package consult-projectile)
+
 (require 'ob-shell)
 
 (org-babel-do-load-languages
@@ -260,6 +279,7 @@
    (restclient . t)
    (shell . t)
    (ruby . t)
+   ;; (swift . t) there is no ob-swift TODO
    (python . t))
  )
 
@@ -278,9 +298,11 @@
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	 (python-mode . lsp-deferred)
-	 ;; if you want which-key integration
-	 (lsp-mode . lsp-enable-which-key-integration))
+         (python-mode . lsp-deferred)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration)
+         ;;(swift-mode . lsp-deferred)
+         )
   :commands (lsp lsp-deffered))
 
 (use-package lsp-pyright
@@ -312,6 +334,8 @@
 ;; (setq package-enable-at-startup nil)
 
 (use-package org-roam-ui)
+
+(setq org-agenda-files (directory-files-recursively "~/Library/Mobile Documents/com~apple~CloudDocs/All Notes/roamnotes/" "\\.org$"))
 
 ;; required for org-roam-export to be available
 (require 'org-roam-export)
@@ -345,15 +369,79 @@
   (eshell-command (concat "open -a firefox " "https://www.google.com/search?q=" (word-at-point)))
   )
 
-(use-package swift-mode)
+(use-package swift-mode
+  :hook (swift-mode . (lambda () (lsp))))
+
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
 ;; install nano-theme
 ;; (use-package nano-theme
 ;;    :init (load-theme 'nano-light t))
 
 ;; Dark theme. Non-dark variant is found with spacemacs-light
-;; alternative good option is tango-dark.
-;; unsing t at the end supresses interactive prompt.
- (use-package spacemacs-theme
-    :defer t
-    :init (load-theme 'spacemacs-light t))
+ ;; alternative good option is tango-dark.
+ ;; unsing t at the end supresses interactive prompt.
+
+(use-package spacemacs-theme
+      :defer t
+      :init (progn
+             (custom-set-variables '(spacemacs-theme-custom-colors
+                                     '((bg1 .  "#f8f8f8"))
+                            ))
+             (load-theme 'spacemacs-light t)
+             )
+      )
+
+;; (custom-set-variables '(spacemacs-theme-custom-colors
+;;                           '(
+;;                             (bg1 . "#ffffff")
+;;                             )
+;;                           )
+;;                       )
+
+(use-package flycheck
+  :init
+  (progn
+    (define-fringe-bitmap 'my-flycheck-fringe-indicator
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00011100
+              #b00111110
+              #b00111110
+              #b00111110
+              #b00011100
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
+
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-error)
+
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-warning)
+
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-info)))
