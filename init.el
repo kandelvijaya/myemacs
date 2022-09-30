@@ -271,6 +271,10 @@
 
 (use-package consult-projectile)
 
+(use-package f)
+
+(use-package s)
+
 (require 'ob-shell)
 
 (org-babel-do-load-languages
@@ -293,6 +297,12 @@
             (lambda ()
               (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 
+(use-package xwwp)
+
+(use-package exec-path-from-shell)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -314,6 +324,10 @@
 
 
 
+(setq lsp-clients-python-library-directories '("/opt/homebrew/lib/python3.10/site-packages/"))
+
+(use-package json-mode)
+
 (defun my/autoparens () (paredit-mode t))
 (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
 (add-hook 'lisp-interaction-mode-hook #'my/autoparens)
@@ -322,7 +336,10 @@
 (defun bj/aggressive-indent-enabled () (aggressive-indent-mode t))
 (add-hook 'emacs-lisp-mode #'bj/aggressive-indent-enabled)
 (add-hook 'lisp-interaction-mode-hook #'bj/aggressive-indent-enabled)
-(add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
+
+
+;; issue with indenting in org mode, esp code blocks inside. 
+;; (add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
 
 ;; (defvar bootstrap-version)
 ;; (let ((bootstrap-file

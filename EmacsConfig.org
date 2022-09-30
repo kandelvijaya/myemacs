@@ -373,6 +373,16 @@ Interacting with Git is awesome in Emacs.
 #+begin_src emacs-lisp
 (use-package consult-projectile)
 #+end_src
+** Standard Libraries
+*** File management
+- check https://github.com/rejeep/f.el 
+#+begin_src emacs-lisp
+  (use-package f)
+#+end_src
+*** String manipulation
+#+begin_src emacs-lisp
+(use-package s)
+#+end_src
 
 * Populate init.el on_Save
 ** Instruct Org-Babel for programming language
@@ -401,8 +411,23 @@ Interacting with Git is awesome in Emacs.
               (lambda ()
                 (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
 #+end_src
- 
+* Embedded Browser Support
+** Installation of Emacs with xWidget Support
+- Install emacs via homebrew
+- `brew install emacs-plus@29 --with-xwidgets --with-imagemagick --with-nobu417-big-sur-icon`
+- For more info check [[https://github.com/d12frosted/homebrew-emacs-plus][d12frosted emacs plus repo]]
+** Setting default option to use xwidget-webkit
+#+begin_src emacs-lisp
+  (use-package xwwp)
+  #+end_src
 * Programming IDE Like support
+** Syncing MacOS $PAHT inside Emacs
+- There is a package to address this issue [[https://github.com/purcell/exec-path-from-shell][exec-path-from-shell]]
+  #+begin_src emacs-lisp
+      (use-package exec-path-from-shell)
+      (when (memq window-system '(mac ns x))
+        (exec-path-from-shell-initialize))
+  #+end_src
 ** Code Autocompletion 
 ** LSP Mode
 #+begin_src emacs-lisp
@@ -433,6 +458,14 @@ Interacting with Git is awesome in Emacs.
 #+begin_src emacs-lisp
 
 #+end_src
+*** Find all imports
+#+begin_src emacs-lisp
+  (setq lsp-clients-python-library-directories '("/opt/homebrew/lib/python3.10/site-packages/"))
+#+end_src
+** JSON mode
+#+begin_src emacs-lisp
+(use-package json-mode)
+#+end_src
 ** Company-mode
 ** Find Recent Files faster 
 ** Emacs Lisp Programming  
@@ -450,7 +483,10 @@ Interacting with Git is awesome in Emacs.
   (defun bj/aggressive-indent-enabled () (aggressive-indent-mode t))
   (add-hook 'emacs-lisp-mode #'bj/aggressive-indent-enabled)
   (add-hook 'lisp-interaction-mode-hook #'bj/aggressive-indent-enabled)
-  (add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
+
+
+  ;; issue with indenting in org mode, esp code blocks inside. 
+  ;; (add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
   #+end_src
 *** Documentation and finding help
 - describe-variable and describe-function are pretty useful
