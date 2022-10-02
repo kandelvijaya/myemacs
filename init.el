@@ -74,6 +74,16 @@
 
 (setq debug-on-error t)
 
+(defun org-babel-tangle-emacsconfig-on-save ()
+    (when (string-equal (buffer-file-name)
+			(expand-file-name "~/.emacs.d/EmacsConfig.org"))
+      (let ((org-config-babel-evaluate nil))
+	(org-babel-tangle))))
+
+  (add-hook 'org-mode-hook
+	    (lambda ()
+	      (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
+
 ;;; uses tab to show completions
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
@@ -287,16 +297,6 @@
    (python . t))
  )
 
-(defun org-babel-tangle-emacsconfig-on-save ()
-    (when (string-equal (buffer-file-name)
-                        (expand-file-name "~/.emacs.d/EmacsConfig.org"))
-      (let ((org-config-babel-evaluate nil))
-        (org-babel-tangle))))
-
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
-
 (use-package xwwp)
 
 (use-package exec-path-from-shell)
@@ -327,6 +327,8 @@
 (setq lsp-clients-python-library-directories '("/opt/homebrew/lib/python3.10/site-packages/"))
 
 (use-package json-mode)
+
+(use-package paredit)
 
 (defun my/autoparens () (paredit-mode t))
 (add-hook 'emacs-lisp-mode-hook #'my/autoparens)

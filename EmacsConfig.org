@@ -5,7 +5,18 @@
 This file is the source of truth to configure Emacs to my liking. It uses Literate prograamming and Reproducibility principles
 to generate $PROJ/.init.el file.
 
-* My Emacs 
+
+* My Emacs
+This emacs was setupw on MacOS M1 machine with Brew using the
+following command.
+1. It also supports Xwidget to browse web within emacs.
+#+begin_src sh
+  brew tap d12frosted/emacs-plus
+  
+  brew install emacs-plus@28 --with-xwidgets --with-imagemagick --with-nobu417-big-sur-icon
+#+end_src
+
+This also needs Fira Code Nerd Font which can be obtained from [[https://www.nerdfonts.com/font-downloads][here]]. 
 ** Basic Setup
 *** Intro
     We want to launch the emacs full screen to get to work. 
@@ -112,6 +123,20 @@ This requires All the icons pacakge to be loaded for better UI.
 *** Debug on Error
 #+begin_src emacs-lisp
 (setq debug-on-error t)
+#+end_src
+
+** on-Save hook on orgmode this file
+#+begin_src emacs-lisp
+  (defun org-babel-tangle-emacsconfig-on-save ()
+      (when (string-equal (buffer-file-name)
+			  (expand-file-name "~/.emacs.d/EmacsConfig.org"))
+	(let ((org-config-babel-evaluate nil))
+	  (org-babel-tangle))))
+
+    (add-hook 'org-mode-hook
+	      (lambda ()
+		(add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
+  
 #+end_src
 
 ** Basic Getting Around
@@ -399,18 +424,6 @@ Interacting with Git is awesome in Emacs.
      (python . t))
    )
 #+end_src
-** on-Save hook on orgmode this file
-#+begin_src emacs-lisp
-  (defun org-babel-tangle-emacsconfig-on-save ()
-      (when (string-equal (buffer-file-name)
-                          (expand-file-name "~/.emacs.d/EmacsConfig.org"))
-        (let ((org-config-babel-evaluate nil))
-          (org-babel-tangle))))
-
-    (add-hook 'org-mode-hook
-              (lambda ()
-                (add-hook 'after-save-hook #'org-babel-tangle-emacsconfig-on-save)))
-#+end_src
 * Embedded Browser Support
 ** Installation of Emacs with xWidget Support
 - Install emacs via homebrew
@@ -473,9 +486,11 @@ Interacting with Git is awesome in Emacs.
 *** Emacs-lisp Match brackets automatically
 **** TODO remove <> from autopairs
 #+begin_src emacs-lisp
-(defun my/autoparens () (paredit-mode t))
-(add-hook 'emacs-lisp-mode-hook #'my/autoparens)
-(add-hook 'lisp-interaction-mode-hook #'my/autoparens)
+  (use-package paredit)
+
+  (defun my/autoparens () (paredit-mode t))
+  (add-hook 'emacs-lisp-mode-hook #'my/autoparens)
+  (add-hook 'lisp-interaction-mode-hook #'my/autoparens)
 #+end_src
 *** Aggressive Indenting
 #+begin_src emacs-lisp
@@ -581,11 +596,16 @@ It's cool to visualize Graph.
 ** REST Client
 - A way to express and explore API
   [[https://github.com/pashky/restclient.el][RestClient Github]]
+
+  There was problem setting this up on another mac.
+  TODO fix it.
+  
 #+begin_src emacs-lisp
   (use-package restclient)
 
   ;; install org-babel hook
   (use-package ob-restclient)
+  
 #+end_src
 
 ** Ruby
