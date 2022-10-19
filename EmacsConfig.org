@@ -125,7 +125,7 @@ This requires All the icons pacakge to be loaded for better UI.
 (setq debug-on-error t)
 #+end_src
 
-** on-Save hook on orgmode this file
+** Tangle Source Code to init.el on Save of this file
 #+begin_src emacs-lisp
   (defun org-babel-tangle-emacsconfig-on-save ()
       (when (string-equal (buffer-file-name)
