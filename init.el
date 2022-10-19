@@ -11,13 +11,6 @@
 
 (setq initial-scratch-message "; Welcome Back \n")
 
-;; download Fira code fonts which looks good. 
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 140)
-
-;; Customizing ModeLine with all-the-icons
-(use-package all-the-icons
-  :if (display-graphic-p))
-
 ;; Make ESC key work like CRTL + G, or hide log/warning prompts 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -51,6 +44,13 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+;; download Fira code fonts which looks good. 
+(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 140)
+
+;; Customizing ModeLine with all-the-icons
+(use-package all-the-icons
+  :if (display-graphic-p))
 
 ;; line and column numbers show
 (column-number-mode)
@@ -93,7 +93,7 @@
 
 ;; fuzzy search on M-x for use with Selectrum
 ;; for example: `M-x swi buf` to get to Switch Buffer
-(use-package selectrum-prescient)
+;; (use-package selectrum-prescient)
 
 ;; Simple and fast M-x completion mode
  (use-package selectrum
@@ -103,20 +103,58 @@
   (selectrum-prescient-mode +1)
   (prescient-persist-mode +1))
 
-;; (use-package vertico
- ;;   :init
- ;;   (vertico-mode)
- ;;   )
+(use-package corfu
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect-first nil)    ;; Disable candidate preselection
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
- ;; ;; Optionally use the orderless completion style.
- ;; (use-package orderless
- ;;   :init
- ;;   ;; Configure a custom style dispatcher (see the Consult wiki)
- ;;   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
- ;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
- ;;   (setq completion-styles '(initials orderless )
- ;; 	completion-category-defaults nil
- ;; 	completion-category-overrides '((file (styles partial-completion)))))
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since Dabbrev can be used globally (M-/).
+  ;; See also `corfu-excluded-modes'.
+  :init
+  (global-corfu-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
+
+;; enable doc lookup popup on the side
+(use-package corfu-doc)
+(add-hook 'corfu-mode-hook #'corfu-doc-mode)
+
+
+;; move corfu popup to mini-buffer for more actions that can be performed. 
+(defun corfu-move-to-minibuffer ()
+  (interactive)
+  (let ((completion-extra-properties corfu--extra)
+        completion-cycle-threshold completion-cycling)
+    (apply #'consult-completion-in-region completion-in-region--data)))
+(define-key corfu-map "\M-m" #'corfu-move-to-minibuffer)
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
@@ -285,18 +323,6 @@
 
 (use-package s)
 
-(require 'ob-shell)
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (restclient . t)
-   (shell . t)
-   (ruby . t)
-   ;; (swift . t) there is no ob-swift TODO
-   (python . t))
- )
-
 (use-package xwwp)
 
 (use-package exec-path-from-shell)
@@ -327,6 +353,10 @@
 (setq lsp-clients-python-library-directories '("/opt/homebrew/lib/python3.10/site-packages/"))
 
 (use-package json-mode)
+
+(setq default-directory "~/")
+
+
 
 (use-package paredit)
 
@@ -360,6 +390,12 @@
 (use-package org-roam-ui)
 
 (setq org-agenda-files (directory-files-recursively "~/Library/Mobile Documents/com~apple~CloudDocs/All Notes/roamnotes/" "\\.org$"))
+
+(global-set-key (kbd "C-c a") #'org-agenda)
+
+(setq org-log-done 'time)
+
+(setq org-agenda-follow-mode 't)
 
 ;; required for org-roam-export to be available
 (require 'org-roam-export)
@@ -404,6 +440,24 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+
+(setenv "PAGER" "cat")
+
+(use-package tldr)
+
+(setq eshell-directory-name ".cache/eshell")
+
+(require 'ob-shell)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (restclient . t)
+   (shell . t)
+   (ruby . t)
+   ;; (swift . t) there is no ob-swift TODO
+   (python . t))
+ )
 
 ;; install nano-theme
 ;; (use-package nano-theme
