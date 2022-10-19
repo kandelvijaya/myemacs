@@ -342,10 +342,10 @@
   :commands (lsp lsp-deffered))
 
 (use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-			  (require 'lsp-pyright)
-			  (lsp-deferred))))  ; or lsp-deferred
+   :ensure t
+   :hook (python-mode . (lambda ()
+   			(require 'lsp-pyright)
+   			(lsp-deferred))))  ; or lsp-deferred
 (use-package lsp-ui)
 
 
@@ -416,13 +416,6 @@
 
 ;; enables Org babel lang integration
 (require 'ob-ruby)
-
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
-
-
 
 (defun bj-search-web-at-point ()
   (interactive)

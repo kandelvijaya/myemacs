@@ -490,10 +490,10 @@ Interacting with Git is awesome in Emacs.
 *** Python lang support
 #+begin_src emacs-lisp
   (use-package lsp-pyright
-    :ensure t
-    :hook (python-mode . (lambda ()
-			    (require 'lsp-pyright)
-			    (lsp-deferred))))  ; or lsp-deferred
+     :ensure t
+     :hook (python-mode . (lambda ()
+   			  (require 'lsp-pyright)
+   			  (lsp-deferred))))  ; or lsp-deferred
   (use-package lsp-ui)
 #+end_src
 *** Run python language server ifneeded
@@ -666,20 +666,6 @@ It's cool to visualize Graph.
   ;; enables Org babel lang integration
   (require 'ob-ruby)
 #+end_src
-
-** Python
-#+begin_src emacs-lisp
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
-#+end_src
-
-*** Completion
-#+begin_src emacs-lisp
-  
-#+end_src
-
 ** Search on firefox using Google
 #+begin_src emacs-lisp
   (defun bj-search-web-at-point ()
