@@ -93,7 +93,7 @@
 
 ;; fuzzy search on M-x for use with Selectrum
 ;; for example: `M-x swi buf` to get to Switch Buffer
-;; (use-package selectrum-prescient)
+(use-package selectrum-prescient)
 
 ;; Simple and fast M-x completion mode
  (use-package selectrum

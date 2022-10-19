@@ -158,7 +158,7 @@ This requires All the icons pacakge to be loaded for better UI.
 #+begin_src emacs-lisp
   ;; fuzzy search on M-x for use with Selectrum
   ;; for example: `M-x swi buf` to get to Switch Buffer
-  ;; (use-package selectrum-prescient)
+  (use-package selectrum-prescient)
 
   ;; Simple and fast M-x completion mode
    (use-package selectrum
@@ -510,7 +510,7 @@ Interacting with Git is awesome in Emacs.
 #+begin_src emacs-lisp
 (use-package json-mode)
 #+end_src
-** Company-mode
+** [NOT USED] Company-mode
 ** Find Recent Files faster 
 *** When invoking C-x C-f
 1. Start from Home directory so traversing back from roam is not
