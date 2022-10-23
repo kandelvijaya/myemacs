@@ -454,6 +454,10 @@ Interacting with Git is awesome in Emacs.
 #+begin_src emacs-lisp
 (use-package s)
 #+end_src
+** Ag
+#+begin_src emacs-lisp
+(use-package ag)
+#+end_src
 
 * Embedded Browser Support
 ** Installation of Emacs with xWidget Support
@@ -716,6 +720,11 @@ It's cool to visualize Graph.
     (setq eshell-directory-name ".cache/eshell")
   #+end_src
 
+** TypeScript 
+Langugage [[https://github.com/emacs-typescript/typescript.el][specific major mode]]
+#+begin_src emacs-lisp
+  (use-package typescript-mode)
+#+end_src
 ** Instruct Org-Babel for programming language
 #+begin_src emacs-lisp
   (require 'ob-shell)
@@ -729,6 +738,11 @@ It's cool to visualize Graph.
      ;; (swift . t) there is no ob-swift TODO
      (python . t))
    )
+#+end_src
+** Org Mode Modern
+#+begin_src emacs-lisp
+  (use-package org-modern)
+  (global-org-modern-mode)
 #+end_src
 * Themes
 ** Nano theme

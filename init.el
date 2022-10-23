@@ -323,6 +323,8 @@
 
 (use-package s)
 
+(use-package ag)
+
 (use-package xwwp)
 
 (use-package exec-path-from-shell)
@@ -440,6 +442,8 @@
 
 (setq eshell-directory-name ".cache/eshell")
 
+(use-package typescript-mode)
+
 (require 'ob-shell)
 
 (org-babel-do-load-languages
@@ -451,6 +455,9 @@
    ;; (swift . t) there is no ob-swift TODO
    (python . t))
  )
+
+(use-package org-modern)
+(global-org-modern-mode)
 
 ;; install nano-theme
 ;; (use-package nano-theme
