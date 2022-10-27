@@ -52,28 +52,6 @@
 (use-package all-the-icons
   :if (display-graphic-p))
 
-;; line and column numbers show
-(column-number-mode)
-(global-display-line-numbers-mode t)
-
-;; disable line numebrs for specific modes
-(dolist (mode '(
-		; list of modes 
-		org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
-	 (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-;; if all-icons-font is not installed prompt the user to install
-;; manula installation via `M-x all-the-icons-install-fonts`
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode)
-  :custom (doom-modeline-height 15))
-
-(setq debug-on-error t)
-
 (defun org-babel-tangle-emacsconfig-on-save ()
     (when (string-equal (buffer-file-name)
 			(expand-file-name "~/.emacs.d/EmacsConfig.org"))
@@ -432,8 +410,14 @@
         ("C-x t t"   . treemacs)
         ("C-x t d"   . treemacs-select-directory)
         ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
+        ("C-x t j"   . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)
+        ;; my custom bindings
+        ;; This replaces treemacs-project-up/down commands which I am not using
+        :map treemacs-mode-map
+        ("<M-up>" . treemacs-root-up)
+        ("<M-down>" . treemacs-root-down) 
+  ))
 
 ;; (use-package treemacs-evil
 ;;   :after (treemacs evil)
@@ -460,6 +444,29 @@
   :after (treemacs)
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
+
+;; line and column numbers show
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; disable line numebrs for specific modes
+(dolist (mode '(
+                ; list of modes 
+                org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook
+                treemacs-mode-hook))
+         (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; if all-icons-font is not installed prompt the user to install
+;; manula installation via `M-x all-the-icons-install-fonts`
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :custom (doom-modeline-height 15))
+
+(setq debug-on-error t)
 
 (use-package xwwp)
 
@@ -510,20 +517,6 @@
 
 ;; issue with indenting in org mode, esp code blocks inside. 
 ;; (add-hook 'org-mode-hook #'bj/aggressive-indent-enabled)
-
-;; (defvar bootstrap-version)
-;; (let ((bootstrap-file
-;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-;;       (bootstrap-version 6))
-;;   (unless (file-exists-p bootstrap-file)
-;;     (with-current-buffer
-;; 	(url-retrieve-synchronously
-;; 	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-;; 	 'silent 'inhibit-cookies)
-;;       (goto-char (point-max))
-;;       (eval-print-last-sexp)))
-;;   (load bootstrap-file nil 'nomessage))
-;; (setq package-enable-at-startup nil)
 
 (use-package org-roam-ui)
 

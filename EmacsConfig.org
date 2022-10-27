@@ -93,38 +93,6 @@ Ensure these are downloaded. If not, the script wont continue.
     :if (display-graphic-p))
 
 #+end_src
-*** Line and Column Numbers
-#+begin_src emacs-lisp
-  ;; line and column numbers show
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
-
-  ;; disable line numebrs for specific modes
-  (dolist (mode '(
-		  ; list of modes 
-		  org-mode-hook
-		  term-mode-hook
-		  shell-mode-hook
-		  eshell-mode-hook))
-	   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-#+end_src
-*** ModeLine Customization
-This requires All the icons pacakge to be loaded for better UI. 
-#+begin_src emacs-lisp
-  ;; if all-icons-font is not installed prompt the user to install
-  ;; manula installation via `M-x all-the-icons-install-fonts`
-  (use-package doom-modeline
-    :ensure t
-    :hook (after-init . doom-modeline-mode)
-    :custom (doom-modeline-height 15))
-
-#+end_src
-*** Debug on Error
-#+begin_src emacs-lisp
-(setq debug-on-error t)
-#+end_src
-
 ** Tangle Source Code to init.el on Save of this file
 #+begin_src emacs-lisp
   (defun org-babel-tangle-emacsconfig-on-save ()
@@ -573,8 +541,14 @@ Not using this one.
           ("C-x t t"   . treemacs)
           ("C-x t d"   . treemacs-select-directory)
           ("C-x t B"   . treemacs-bookmark)
-          ("C-x t C-t" . treemacs-find-file)
-          ("C-x t M-t" . treemacs-find-tag)))
+          ("C-x t j"   . treemacs-find-file)
+          ("C-x t M-t" . treemacs-find-tag)
+          ;; my custom bindings
+          ;; This replaces treemacs-project-up/down commands which I am not using
+          :map treemacs-mode-map
+          ("<M-up>" . treemacs-root-up)
+          ("<M-down>" . treemacs-root-down) 
+    ))
 
   ;; (use-package treemacs-evil
   ;;   :after (treemacs evil)
@@ -602,6 +576,39 @@ Not using this one.
     :ensure t
     :config (treemacs-set-scope-type 'Tabs))
 #+end_src
+** Line and Column Numbers
+#+begin_src emacs-lisp
+    ;; line and column numbers show
+    (column-number-mode)
+    (global-display-line-numbers-mode t)
+
+    ;; disable line numebrs for specific modes
+    (dolist (mode '(
+                    ; list of modes 
+                    org-mode-hook
+                    term-mode-hook
+                    shell-mode-hook
+                    eshell-mode-hook
+                    treemacs-mode-hook))
+             (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+*** ModeLine Customization
+This requires All the icons pacakge to be loaded for better UI. 
+#+begin_src emacs-lisp
+  ;; if all-icons-font is not installed prompt the user to install
+  ;; manula installation via `M-x all-the-icons-install-fonts`
+  (use-package doom-modeline
+    :ensure t
+    :hook (after-init . doom-modeline-mode)
+    :custom (doom-modeline-height 15))
+
+#+end_src
+*** Debug on Error
+#+begin_src emacs-lisp
+(setq debug-on-error t)
+#+end_src
+
 * Embedded Browser Support
 ** Installation of Emacs with xWidget Support
 - Install emacs via homebrew
@@ -657,7 +664,6 @@ Not using this one.
 #+begin_src emacs-lisp
 (use-package json-mode)
 #+end_src
-** [NOT USED] Company-mode
 ** Find Recent Files faster 
 *** When invoking C-x C-f
 1. Start from Home directory so traversing back from roam is not
@@ -719,26 +725,6 @@ Not using this one.
 - mutations are great if the only purpose of intemediate list is to be
   thrown away. They usually start with `nreverse`.
 *** Testing
-
-** [Disabled] Straight Package Manager
-- using this confuses with normal package management.
-- Disabled for now.
-- When turned on to use Org-Roam-UI, it downloaded all new variants of org, org-roam and confused the existing config.
-#+begin_src emacs-lisp
-  ;; (defvar bootstrap-version)
-  ;; (let ((bootstrap-file
-  ;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-  ;;       (bootstrap-version 6))
-  ;;   (unless (file-exists-p bootstrap-file)
-  ;;     (with-current-buffer
-  ;; 	(url-retrieve-synchronously
-  ;; 	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-  ;; 	 'silent 'inhibit-cookies)
-  ;;       (goto-char (point-max))
-  ;;       (eval-print-last-sexp)))
-  ;;   (load bootstrap-file nil 'nomessage))
-  ;; (setq package-enable-at-startup nil)
-#+end_src
 
 ** Org Roam UI
 It's cool to visualize Graph.
